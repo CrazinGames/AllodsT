@@ -1,27 +1,35 @@
 using UnityEngine;
 
-public class Egida : MonoBehaviour
+public class EgidaMove : MonoBehaviour
 {
     [Header("Object References")]
-    public GameObject obj;
-    public GameObject mainObj;
-    public GameObject Center;
+    [SerializeField] private GameObject obj;
+    [SerializeField] private GameObject mainObj;
+    [SerializeField] private GameObject Center;
+    [SerializeField] private Animator _animator;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
-    public float rotationSpeed = 50f;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 50f;
+    [SerializeField] private float rotationSpeed2 = 10f;
 
-    private void Update()
+    private void FixedUpdate()
     {
         MainObj();
         Obj();
+        FireAnim();
+    }
+
+
+    private void FireAnim()
+    {
+        _animator.SetBool("Fire", Input.GetKey(KeyCode.Mouse0));
     }
 
     private void MainObj()
     {
         Vector3 movement = Vector3.zero;
 
-        // Движение вперед/назад
         if (Input.GetKey(KeyCode.W))
         {
             movement = moveSpeed * Time.deltaTime * mainObj.transform.up;
@@ -31,7 +39,6 @@ public class Egida : MonoBehaviour
             movement = moveSpeed * Time.deltaTime * -mainObj.transform.up;
         }
 
-        // Поворот влево/вправо
         if (Input.GetKey(KeyCode.A))
         {
             mainObj.transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
@@ -41,7 +48,6 @@ public class Egida : MonoBehaviour
             mainObj.transform.Rotate(Vector3.forward, -rotationSpeed * Time.deltaTime);
         }
 
-        // Применение движения
         if (movement != Vector3.zero)
         {
             mainObj.transform.position += movement;
@@ -60,7 +66,7 @@ public class Egida : MonoBehaviour
         obj.transform.rotation = Quaternion.Slerp(
             obj.transform.rotation,
             Quaternion.Euler(0f, 0f, targetAngle),
-            rotationSpeed * Time.deltaTime
+            rotationSpeed2 * Time.deltaTime
         );
     }
 }
