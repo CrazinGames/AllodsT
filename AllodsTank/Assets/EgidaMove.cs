@@ -1,29 +1,22 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class EgidaMove : MonoBehaviour
 {
-    [Header("Object References")]
     [SerializeField] private GameObject obj;
-    [SerializeField] private GameObject mainObj;
+    [SerializeField] private GameObject obj2;
     [SerializeField] private GameObject Center;
-    [SerializeField] private Animator _animator;
 
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 50f;
     [SerializeField] private float rotationSpeed2 = 10f;
+
+    [SerializeField] private StatsMount stat;
+
 
     private void FixedUpdate()
     {
         MainObj();
         Obj();
-        FireAnim();
-    }
-
-
-    private void FireAnim()
-    {
-        _animator.SetBool("Fire", Input.GetKey(KeyCode.Mouse0));
     }
 
     private void MainObj()
@@ -32,25 +25,25 @@ public class EgidaMove : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            movement = moveSpeed * Time.deltaTime * mainObj.transform.up;
+            movement = stat._speed * Time.deltaTime * obj.transform.up;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            movement = moveSpeed * Time.deltaTime * -mainObj.transform.up;
+            movement = stat._speed * Time.deltaTime * -obj.transform.up;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            mainObj.transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+            obj.transform.Rotate(Vector3.forward, stat._speedRot * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            mainObj.transform.Rotate(Vector3.forward, -rotationSpeed * Time.deltaTime);
+            obj.transform.Rotate(Vector3.forward, -stat._speedRot * Time.deltaTime);
         }
 
         if (movement != Vector3.zero)
         {
-            mainObj.transform.position += movement;
+            obj.transform.position += movement;
         }
     }
 
@@ -63,8 +56,8 @@ public class EgidaMove : MonoBehaviour
         float targetAngle = Mathf.Atan2(directionToMouse.y, directionToMouse.x) * Mathf.Rad2Deg - 90f;
 
         // Плавное вращение к позиции мыши
-        obj.transform.rotation = Quaternion.Slerp(
-            obj.transform.rotation,
+        obj2.transform.rotation = Quaternion.Slerp(
+            obj2.transform.rotation,
             Quaternion.Euler(0f, 0f, targetAngle),
             rotationSpeed2 * Time.deltaTime
         );

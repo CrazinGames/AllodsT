@@ -14,5 +14,6 @@ public class CameraMove : MonoBehaviour
     {
         Vector3 mP = _target.position + _offset;
         transform.position = Vector3.SmoothDamp(transform.position, mP, ref _velocity, _damping);
+
     }
 }
