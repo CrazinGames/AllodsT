@@ -1,8 +1,6 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class EgidaMove : MonoBehaviour
+public class EgidaMain : MonoBehaviour
 {
     [SerializeField] private GameObject obj;
     [SerializeField] private GameObject obj2;
@@ -11,12 +9,14 @@ public class EgidaMove : MonoBehaviour
     [SerializeField] private float rotationSpeed2 = 10f;
 
     [SerializeField] private StatsMount stat;
+    [SerializeField] private EgidaFire fire;
 
 
     private void FixedUpdate()
     {
         MainObj();
         Obj();
+        fire.Fire();
     }
 
     private void MainObj()

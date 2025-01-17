@@ -11,4 +11,5 @@ public class Buff : ScriptableObject
     [SerializeField] internal GameObject _icon;
     [SerializeField] internal bool buffOrDebuff; //Если стоит галочка, значит дебаф
     [SerializeField] internal MonoScript script; //Скрипт для нашего бафа
+
 }
