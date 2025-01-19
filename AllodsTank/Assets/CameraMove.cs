@@ -10,10 +10,10 @@ public class CameraMove : MonoBehaviour
 
     private Vector3 _velocity = Vector3.zero;
 
-    private void FixedUpdate()
+    internal void camMove()
     {
         Vector3 mP = _target.position + _offset;
         transform.position = Vector3.SmoothDamp(transform.position, mP, ref _velocity, _damping);
-
     }
+    
 }

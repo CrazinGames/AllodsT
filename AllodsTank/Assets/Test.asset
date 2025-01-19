@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Test
   m_EditorClassIdentifier: 
   _mountName: Test
-  _hp: 1000
+  _hp: 4720
   _damage: 0
-  _speed: 0
+  _speed: 5080
   _speedRot: 0

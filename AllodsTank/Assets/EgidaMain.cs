@@ -1,6 +1,7 @@
 using UnityEngine;
+using static OneUpdate;
 
-public class EgidaMain : MonoBehaviour
+public class EgidaMain : MonoBehaviour, IUpdatable
 {
     [SerializeField] private GameObject obj;
     [SerializeField] private GameObject obj2;
@@ -10,13 +11,14 @@ public class EgidaMain : MonoBehaviour
 
     [SerializeField] private StatsMount stat;
     [SerializeField] private EgidaFire fire;
+    [SerializeField] private CameraMove Cam;
 
-
-    private void FixedUpdate()
+    void IUpdatable.CustomFixedUpdate()
     {
         MainObj();
         Obj();
         fire.Fire();
+        Cam.camMove();
     }
 
     private void MainObj()

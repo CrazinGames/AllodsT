@@ -18,16 +18,13 @@ public class EgidaFire : MonoBehaviour
             //Вызов бафа
             if (collision.gameObject.TryGetComponent<HP>(out var enemyHP))
             {
-                // Загружаем префаб баффа из ресурсов
+                // Загружаем объект баффа из ресурсов
                 var burnBuff = Resources.Load<Buff>("Burn");
                 if (burnBuff != null)
                 {
                     // Получаем BuffManager цели и применяем бафф
                     var enemyBuffManager = collision.gameObject.GetComponent<BuffManager>();
-                    if (enemyBuffManager != null)
-                    {
-                        enemyBuffManager.ApplyBuff(burnBuff);
-                    }
+                    enemyBuffManager?.ApplyBuff(burnBuff);
                 }
             }
             //Конец вызова

@@ -11,21 +11,21 @@ public class BuffManager : MonoBehaviour
             return;
         }
 
-        // Получаем тип класса из MonoScript
+        // Класс из нашего бафа
         var scriptType = buff.script.GetClass();
         if (scriptType == null)
         {
             return;
         }
 
-        // Создаём экземпляр класса с передачей параметров
+        // Создаём экземпляр класса для передачи параметров
         var buffInstance = System.Activator.CreateInstance(scriptType) as IBuff;
         if (buffInstance == null)
         {
             return;
         }
 
-        // Применяем бафф напрямую к StatsMount
+        // Пихаем баф в статы нашего объекта
         buffInstance.Apply(statMount);
     }
 }
