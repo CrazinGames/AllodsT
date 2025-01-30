@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class BuffManager : MonoBehaviour
 {
@@ -6,31 +7,35 @@ public class BuffManager : MonoBehaviour
 
     public void ApplyBuff(Buff buff)
     {
-        if (buff == null || buff.script == null)
+        if (buff == null || string.IsNullOrEmpty(buff.scriptName))
         {
+            Debug.LogWarning("Buff or scriptName is null/empty. Skipping.");
             return;
         }
 
-        // Класс из нашего бафа
-        var scriptType = buff.script.GetClass();
+        // Ищем тип класса через рефлексию
+        var scriptType = Type.GetType(buff.scriptName);
         if (scriptType == null)
         {
+            Debug.LogError($"Cannot find script type: {buff.scriptName}");
             return;
         }
 
-        // Создаём экземпляр класса для передачи параметров
-        var buffInstance = System.Activator.CreateInstance(scriptType) as IBuff;
+        // Создаём экземпляр класса через рефлексию
+        var buffInstance = Activator.CreateInstance(scriptType) as IBuff;
         if (buffInstance == null)
         {
+            Debug.LogError($"Script {buff.scriptName} does not implement IBuff interface.");
             return;
         }
 
-        // Пихаем баф в статы нашего объекта
+        // Применяем баф к statMount
         buffInstance.Apply(statMount);
+        Debug.Log($"Buff {buff._name} applied successfully.");
     }
 }
 
-// Изменяем интерфейс для работы только со StatsMount
+// Интерфейс для работы только со StatsMount
 public interface IBuff
 {
     void Apply(StatsMount targetStats);

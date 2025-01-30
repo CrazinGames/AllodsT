@@ -1,7 +1,8 @@
+using Photon.Pun;
 using UnityEngine;
 using static OneUpdate;
 
-public class EgidaMain : MonoBehaviour, IUpdatable
+public class EgidaMain : MonoBehaviour, IUpdatable, IPunObservable
 {
     [SerializeField] private GameObject obj;
     [SerializeField] private GameObject obj2;
@@ -12,13 +13,38 @@ public class EgidaMain : MonoBehaviour, IUpdatable
     [SerializeField] private StatsMount stat;
     [SerializeField] private EgidaFire fire;
     [SerializeField] private CameraMove Cam;
+    [SerializeField] private PhotonView view;
+
+    private OneUpdate oneUpdate; // Возвращаем oneUpdate
+
+    private Vector3 networkPosition;
+    private Quaternion networkRotation;
+
+    private void Start()
+    {
+        if (view.IsMine)
+        {
+            Cam = Camera.main.GetComponent<CameraMove>();
+            oneUpdate = FindAnyObjectByType<OneUpdate>(); // Возвращаем строку
+            oneUpdate?.RefreshUpdatableScripts(); // Регистрируем в OneUpdate
+        }
+    }
 
     void IUpdatable.CustomFixedUpdate()
     {
-        MainObj();
-        Obj();
-        fire.Fire();
-        Cam.camMove();
+        if (view.IsMine)
+        {
+            MainObj();
+            Obj();
+            fire.Fire();
+            Cam.camMove(false);
+        }
+        else
+        {
+            // Интерполяция движения для других игроков
+            obj.transform.position = Vector3.Lerp(obj.transform.position, networkPosition, Time.deltaTime * 10f);
+            obj.transform.rotation = Quaternion.Lerp(obj.transform.rotation, networkRotation, Time.deltaTime * 10f);
+        }
     }
 
     private void MainObj()
@@ -57,11 +83,25 @@ public class EgidaMain : MonoBehaviour, IUpdatable
         Vector3 directionToMouse = mousePosition - Center.transform.position;
         float targetAngle = Mathf.Atan2(directionToMouse.y, directionToMouse.x) * Mathf.Rad2Deg - 90f;
 
-        // Плавное вращение к позиции мыши
         obj2.transform.rotation = Quaternion.Slerp(
             obj2.transform.rotation,
             Quaternion.Euler(0f, 0f, targetAngle),
             rotationSpeed2 * Time.deltaTime
         );
+    }
+
+    // Синхронизация через Photon
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting) // Мы отправляем данные
+        {
+            stream.SendNext(obj.transform.position);
+            stream.SendNext(obj.transform.rotation);
+        }
+        else // Получаем данные от других игроков
+        {
+            networkPosition = (Vector3)stream.ReceiveNext();
+            networkRotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

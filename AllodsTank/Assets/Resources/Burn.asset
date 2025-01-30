@@ -19,4 +19,5 @@ MonoBehaviour:
   _delay: 0
   _icon: {fileID: 0}
   buffOrDebuff: 1
+  scriptName: Burn
   script: {fileID: 11500000, guid: a4135a4b31474fc48a99ba845b60aa54, type: 3}
