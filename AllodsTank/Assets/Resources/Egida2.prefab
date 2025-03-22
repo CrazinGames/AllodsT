@@ -441,9 +441,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a278a63c2e2984b9530cab6687845c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
+  healthSlider: {fileID: 0}
+  damageEffect: {fileID: 0}
   statsMount: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  _healthSlider: {fileID: 0}
-  view: {fileID: 7462161805334485929}
+  damageTickRate: 0.1
+  syncInterval: 1
 --- !u!114 &482995838975834161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,9 +629,10 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 1
+  OwnershipTransfer: 0
   observableSearch: 0
   ObservedComponents:
+  - {fileID: 1338021589312281237}
   - {fileID: 782297596306460198}
   - {fileID: 3946011717927433844}
   - {fileID: 4238664105833322056}
