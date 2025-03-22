@@ -3,7 +3,7 @@ using System;
 
 public class BuffManager : MonoBehaviour
 {
-    [SerializeField] private StatsMount statMount; // Ссылка на ScriptableObject StatsMount
+    [SerializeField] private StatsMount statMount;
 
     public void ApplyBuff(Buff buff)
     {
@@ -13,7 +13,6 @@ public class BuffManager : MonoBehaviour
             return;
         }
 
-        // Ищем тип класса через рефлексию
         var scriptType = Type.GetType(buff.scriptName);
         if (scriptType == null)
         {
@@ -21,7 +20,6 @@ public class BuffManager : MonoBehaviour
             return;
         }
 
-        // Создаём экземпляр класса через рефлексию
         var buffInstance = Activator.CreateInstance(scriptType) as IBuff;
         if (buffInstance == null)
         {
@@ -29,13 +27,11 @@ public class BuffManager : MonoBehaviour
             return;
         }
 
-        // Применяем баф к statMount
         buffInstance.Apply(statMount);
         Debug.Log($"Buff {buff._name} applied successfully.");
     }
 }
 
-// Интерфейс для работы только со StatsMount
 public interface IBuff
 {
     void Apply(StatsMount targetStats);
