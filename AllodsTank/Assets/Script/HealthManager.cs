@@ -5,7 +5,7 @@ using ExitGames.Client.Photon;
 using System.Collections;
 using System.Collections.Generic;
 
-public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetworkEventHandler
+public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private Image healthSlider;
@@ -17,7 +17,6 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
     private float currentHealth;
     private PhotonView photonView;
     private bool isDead;
-    private NetworkEvents networkEvents;
     
     // Переменные для оптимизации сети
     private float lastDamageTime;
@@ -30,7 +29,6 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
-        networkEvents = FindObjectOfType<NetworkEvents>();
         
         // Инициализация значения здоровья
         float startHP = statsMount != null ? statsMount._hp : maxHealth;
@@ -45,24 +43,8 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
         
         UpdateUI();
     }
-    
-    private void OnEnable()
-    {
-        if (NetworkEvents.Instance != null)
-        {
-            NetworkEvents.Instance.RegisterEventHandler(NetworkEvents.EventCodes.PlayerDamaged, this);
-            NetworkEvents.Instance.RegisterEventHandler(NetworkEvents.EventCodes.PlayerHealed, this);
-        }
-    }
-    
-    private void OnDisable()
-    {
-        if (NetworkEvents.Instance != null)
-        {
-            NetworkEvents.Instance.UnregisterEventHandler(NetworkEvents.EventCodes.PlayerDamaged, this);
-            NetworkEvents.Instance.UnregisterEventHandler(NetworkEvents.EventCodes.PlayerHealed, this);
-        }
-    }
+
+
     
     private void Start()
     {
@@ -140,33 +122,7 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
             }
         }
     }
-    
-    // Интерфейс для обработки сетевых событий
-    public void OnNetworkEvent(byte eventCode, object[] data)
-    {
-        if (eventCode == (byte)NetworkEvents.EventCodes.PlayerDamaged)
-        {
-            string playerID = (string)data[0];
-            
-            // Обрабатываем только события, предназначенные для нашего игрока
-            if (playerID == photonView.Owner.UserId)
-            {
-                float damage = (float)data[1];
-                HandleDamageEvent(damage);
-            }
-        }
-        else if (eventCode == (byte)NetworkEvents.EventCodes.PlayerHealed)
-        {
-            string playerID = (string)data[0];
-            
-            // Обрабатываем только события, предназначенные для нашего игрока
-            if (playerID == photonView.Owner.UserId)
-            {
-                float healAmount = (float)data[1];
-                HandleHealEvent(healAmount);
-            }
-        }
-    }
+
     
     private void HandleDamageEvent(float damage)
     {
@@ -204,10 +160,6 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
             damageEffectPool.SpawnFromPool(transform.position, Quaternion.identity);
         }
 
-        if (NetworkEvents.Instance != null)
-        {
-            NetworkEvents.Instance.SendPlayerDamaged(photonView.Owner.UserId, damage);
-        }
 
         if (currentHealth <= 0 && !isDead)
         {
@@ -227,19 +179,7 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
     }
 
     [PunRPC]
-    private void OnPlayerDeath(string attackerID)
-    {
-        if (photonView.IsMine)
-        {
-            if (NetworkEvents.Instance != null)
-            {
-                NetworkEvents.Instance.SendPlayerDamaged(photonView.Owner.UserId, 0);
-            }
-            
-            // Можно добавить дополнительную логику смерти
-            StartCoroutine(DelayedDeactivate());
-        }
-    }
+ 
     
     private IEnumerator DelayedDeactivate()
     {
@@ -268,10 +208,6 @@ public class HealthManager : MonoBehaviourPunCallbacks, IPunObservable, INetwork
         gameObject.SetActive(true);
         UpdateUI();
 
-        if (NetworkEvents.Instance != null)
-        {
-            NetworkEvents.Instance.SendPlayerHealed(photonView.Owner.UserId, currentHealth);
-        }
         
         // Форсируем синхронизацию при респауне
         photonView.RPC("SyncHealth", RpcTarget.Others, currentHealth, isDead);

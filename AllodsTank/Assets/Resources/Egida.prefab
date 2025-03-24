@@ -449,7 +449,8 @@ MonoBehaviour:
   stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   fire: {fileID: 4409849644366213069}
   Cam: {fileID: 0}
-  view: {fileID: 7462161805334485929}
+  interpolationBackTime: 0.1
+  smoothing: 10
 --- !u!114 &7080904412144436721
 MonoBehaviour:
   m_ObjectHideFlags: 0

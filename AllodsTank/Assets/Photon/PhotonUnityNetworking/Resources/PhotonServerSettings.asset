@@ -44,6 +44,7 @@ MonoBehaviour:
   - OnPlayerDeath
   - SyncHealth
   - SyncPositionOnCollision
+  - DelayedDeactivate
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

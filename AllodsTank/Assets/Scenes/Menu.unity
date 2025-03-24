@@ -4971,26 +4971,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45888b1bfc111b648b48e397441d191f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  createRoomInput: {fileID: 550443609}
-  joinRoomInput: {fileID: 1070836115}
-  nickNameInput: {fileID: 1114610469}
-  mountButtons:
+  _create: {fileID: 550443609}
+  _join: {fileID: 1070836115}
+  _nickName: {fileID: 1114610469}
+  _button:
   - {fileID: 1480203229}
-  connectionStatusPanel: {fileID: 1293011031}
-  connectionStatusText: {fileID: 1293011033}
-  errorPanel: {fileID: 19457888}
-  errorText: {fileID: 19457889}
-  createRoomButton: {fileID: 1663296700}
-  joinRoomButton: {fileID: 17517514}
-  gameVersion: 1.0
-  maxPlayersPerRoom: 4
-  mountName: {fileID: 0}
-  reconnectDelay: 5
-  maxReconnectAttempts: 3
-  useNatPunchthrough: 1
-  sendRateOnSerialize: 30
-  serializedViewsInitial: 10
-  photonPingInterval: 500
+  _name: {fileID: 11400000, guid: ffd2ad030815ad54bb5dff540d2c9ac1, type: 2}
 --- !u!1 &1255500726
 GameObject:
   m_ObjectHideFlags: 0
