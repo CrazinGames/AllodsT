@@ -343,9 +343,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6312340305496678610}
   - component: {fileID: 4245628788460349766}
+  - component: {fileID: 4227810952347502332}
   - component: {fileID: 482995838975834161}
   - component: {fileID: 7080904412144436721}
-  - component: {fileID: 7607470620991432877}
   - component: {fileID: 7029392950129675640}
   - component: {fileID: 4943603429900971106}
   - component: {fileID: 7462161805334485929}
@@ -429,6 +429,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4227810952347502332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8147854822817029651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62e9827de162ed443b1851e1260ea7a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseStats: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
+  _hpSlider: {fileID: 0}
 --- !u!114 &482995838975834161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,12 +459,13 @@ MonoBehaviour:
   - {fileID: 8147854822817029651}
   - {fileID: 1231608282483088079}
   - {fileID: 2992437676668911649}
-  rotationSpeed2: 5
   stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   fire: {fileID: 4409849644366213069}
-  Cam: {fileID: 0}
-  interpolationBackTime: 0.1
+  rotationSpeed2: 10
   smoothing: 10
+  teleportDistanceThreshold: 5
+  bufferSize: 20
+  maxPredictionTime: 1
 --- !u!114 &7080904412144436721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,24 +479,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statMount: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
---- !u!114 &7607470620991432877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8147854822817029651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94a278a63c2e2984b9530cab6687845c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  healthSlider: {fileID: 0}
-  damageEffect: {fileID: 3760487910359131746}
-  statsMount: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  damageTickRate: 0.1
-  syncInterval: 1
 --- !u!50 &7029392950129675640
 Rigidbody2D:
   serializedVersion: 5
@@ -633,7 +630,7 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 7607470620991432877}
+  - {fileID: 482995838975834161}
   - {fileID: 782297596306460198}
   - {fileID: 3946011717927433844}
   - {fileID: 4238664105833322056}

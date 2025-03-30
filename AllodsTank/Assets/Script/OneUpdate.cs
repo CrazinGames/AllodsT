@@ -1,84 +1,99 @@
 using Photon.Pun;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)] // Запускаем раньше других скриптов
 public class OneUpdate : MonoBehaviour
 {
-    private readonly List<IUpdatable> updatableScripts = new List<IUpdatable>();
-    private bool initialized = false;
+    private readonly HashSet<IUpdatable> _updatableScripts = new HashSet<IUpdatable>();
+    private bool _isDirty; // Флаг необходимости обновления списка
 
     private void Awake()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            UpdateUpdatableScripts();
-        }
+        // Автоматический поиск только при первом запуске
+        FindInitialUpdatables();
     }
 
-    // Обновляем список Updatable-скриптов, вызывается по мере необходимости
-    private void UpdateUpdatableScripts()
-    {
-        updatableScripts.Clear();
-
-        var scripts = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-            .OfType<IUpdatable>()
-            .Where(script =>
-            {
-                var photonView = (script as MonoBehaviour)?.GetComponent<PhotonView>();
-                return photonView == null || photonView.IsMine;
-            });
-
-        updatableScripts.AddRange(scripts);
-        initialized = true;
-
-        Debug.Log($"OneUpdate: Найдено {updatableScripts.Count} скриптов для обновления.");
-    }
     private void FixedUpdate()
     {
-        if (!initialized) return;
-
-        // Создаем копию списка, чтобы избежать ошибок при изменении списка во время цикла
-        var scriptsCopy = updatableScripts.ToList();
-
-        foreach (var script in scriptsCopy)
+        if (_isDirty)
         {
+            RefreshUpdatableScripts();
+            _isDirty = false;
+        }
+
+        if (_updatableScripts.Count == 0) return;
+
+        // Используем foreach с копированием для потокобезопасности
+        foreach (var script in new List<IUpdatable>(_updatableScripts))
+        {
+            if (script == null)
+            {
+                _isDirty = true;
+                continue;
+            }
+
             try
             {
                 script.CustomFixedUpdate();
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Ошибка в {script.GetType().Name}: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"Error in {script.GetType().Name}: {e.Message}\n{e.StackTrace}");
+                _isDirty = true;
             }
         }
     }
 
-    internal void RegisterUpdatable(IUpdatable script)
+    private void FindInitialUpdatables()
     {
-        if (!updatableScripts.Contains(script))
+        _updatableScripts.Clear();
+
+        var allScripts = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var script in allScripts)
         {
-            updatableScripts.Add(script);
-            Debug.Log($"OneUpdate: {script.GetType().Name} добавлен в список обновлений.");
+            if (script is IUpdatable updatable && IsValidForUpdate(script))
+            {
+                _updatableScripts.Add(updatable);
+            }
+        }
+
+        Debug.Log($"OneUpdate: Initialized with {_updatableScripts.Count} updatables");
+    }
+
+    private bool IsValidForUpdate(MonoBehaviour script)
+    {
+        if (script == null) return false;
+
+        var photonView = script.GetComponent<PhotonView>();
+        return photonView == null || photonView.IsMine;
+    }
+
+    public void RegisterUpdatable(IUpdatable script)
+    {
+        if (script != null && !_updatableScripts.Contains(script))
+        {
+            _updatableScripts.Add(script);
         }
     }
 
-    internal void UnregisterUpdatable(IUpdatable script)
+    public void UnregisterUpdatable(IUpdatable script)
     {
-        if (updatableScripts.Remove(script))
+        if (script != null)
         {
-            Debug.Log($"OneUpdate: {script.GetType().Name} удален из списка обновлений.");
+            _updatableScripts.Remove(script);
         }
     }
 
-    internal interface IUpdatable
-    {
-        void CustomFixedUpdate();
-    }
-
-    // Метод можно вызывать для ручного обновления списка (при смене сцены или инициализации новых объектов)
     public void RefreshUpdatableScripts()
     {
-        UpdateUpdatableScripts();
+        // Очищаем null-ссылки
+        _updatableScripts.RemoveWhere(script => script == null);
+        _isDirty = false;
+    }
+
+    public interface IUpdatable
+    {
+        void CustomFixedUpdate();
     }
 }

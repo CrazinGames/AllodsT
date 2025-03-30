@@ -3,48 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using static OneUpdate;
 
-public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
+public class MolniaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
 {
     [Header("References")]
     [SerializeField] private GameObject[] obj; // 0 - основной объект, 1 - оружие, 2 - точка привязки
     [SerializeField] private StatsMount stat;
-    [SerializeField] private EgidaFire fire;
     [SerializeField] private float rotationSpeed2 = 10f;
-    [SerializeField] private float smoothing = 10f;
 
     [Header("Network")]
-    [SerializeField] private float teleportDistanceThreshold = 5f; // Порог для телепорта при десинхронизации
-    [SerializeField] private int bufferSize = 20; // Размер буфера для хранения истории движений
-    [SerializeField] private float maxPredictionTime = 1.0f; // Максимальное время предсказания в секундах
+    [SerializeField] private float baseSmoothing = 15f; // Базовое значение сглаживания
+    [SerializeField] private float teleportDistanceThreshold = 3f;
+    [SerializeField] private float minSmoothing = 5f; // Минимальное сглаживание при высоком пинге
+    [SerializeField] private float maxSmoothing = 20f; // Максимальное сглаживание при низком пинге
+    [SerializeField] private int bufferSize = 20; // Размер буфера истории движений
+    [SerializeField] private float maxPredictionTime = 1.0f; // Максимальное время предсказания
 
     private OneUpdate oneUpdate;
     private CameraMove cam;
     private Camera mainCam;
     private bool isInitialized = false;
+    private float currentSmoothing; // Текущее динамическое сглаживание
 
     // Сетевые переменные для интерполяции
     private Vector3 correctPlayerPos;
     private Quaternion correctPlayerRot;
-    private Quaternion correctWeaponRot;
     
     // Структура для хранения состояния движения
     private struct MovementState
     {
         public Vector3 position;
         public Quaternion rotation;
-        public Quaternion weaponRotation;
         public double timestamp; // Серверное время
     }
     
     // Буфер для хранения состояний движения
     private List<MovementState> movementBuffer = new List<MovementState>();
     
-    // Информация о последней команде, отправленной на сервер
+    // Информация о последней команде
     private double lastInputTime;
     private int lastSequenceNumber = 0;
     private int currentSequenceNumber = 0;
     
-    // Отката движения
+    // Структура для хранения информации об откатах движения
     private struct MovementRollback
     {
         public int sequenceNumber;
@@ -53,13 +53,14 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         public bool isActive;
     }
     
+    // Список активных откатов
     private List<MovementRollback> activeRollbacks = new List<MovementRollback>();
 
     private void Awake()
     {
         correctPlayerPos = transform.position;
         correctPlayerRot = transform.rotation;
-        correctWeaponRot = obj.Length > 1 ? obj[1].transform.rotation : Quaternion.identity;
+        currentSmoothing = baseSmoothing;
         
         // Инициализация буфера движений
         for (int i = 0; i < bufferSize; i++)
@@ -68,7 +69,6 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             {
                 position = transform.position,
                 rotation = transform.rotation,
-                weaponRotation = obj.Length > 1 ? obj[1].transform.rotation : Quaternion.identity,
                 timestamp = PhotonNetwork.Time
             });
         }
@@ -79,24 +79,16 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         if (!photonView.IsMine) return;
 
         mainCam = Camera.main;
-        if (mainCam == null)
-        {
-            Debug.LogError("Main camera not found!");
-            return;
-        }
+        if (mainCam == null) Debug.LogError("Main camera not found!");
 
         cam = mainCam.GetComponent<CameraMove>();
-        if (cam == null)
-            Debug.LogError("CameraMove not found on main camera!");
+        if (cam == null) Debug.LogError("CameraMove not found on main camera!");
 
         oneUpdate = FindAnyObjectByType<OneUpdate>();
-        if (oneUpdate == null)
-            Debug.LogError("OneUpdate not found in scene!");
-        else
-            oneUpdate.RegisterUpdatable(this);
+        if (oneUpdate == null) Debug.LogError("OneUpdate not found in scene!");
+        else oneUpdate.RegisterUpdatable(this);
 
-        // Проверка всех ссылок
-        isInitialized = (stat != null && obj != null && obj.Length >= 3 && obj[0] != null && obj[1] != null && obj[2] != null);
+        isInitialized = (obj[0] != null);
         if (!isInitialized) Debug.LogError("Not all objects initialized!");
     }
 
@@ -112,7 +104,7 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
 
         if (photonView.IsMine)
         {
-            // Проверка активных откатов перед применением движения
+            // Проверка активных откатов
             HandleActiveRollbacks();
             
             // Регистрация нового состояния
@@ -121,11 +113,8 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             
             // Выполнение движения
             MainObj();
-            RotateWeapon();
-            fire.Fire();
             //stat.HP(obj[0]);
-            
-            // Сохранение текущего состояния в буфер
+            // Сохранение состояния в буфер
             SaveCurrentState();
             
             if (cam != null) cam.camMove(false);
@@ -135,22 +124,21 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             ApplyNetworkInterpolation();
         }
     }
-
+    
     private void HandleActiveRollbacks()
     {
         // Удаление завершенных откатов
         activeRollbacks.RemoveAll(r => 
             !r.isActive || (PhotonNetwork.Time >= r.startTimestamp + r.duration));
             
-        // Применение активных откатов (если они затрагивают текущий объект)
+        // Применение активных откатов
         foreach (var rollback in activeRollbacks)
         {
             if (rollback.isActive)
             {
-                // Здесь можно добавить логику для обработки конкретных эффектов отката
-                // Например, замедление, блокировка некоторых действий и т.д.
+                // Здесь логика применения эффектов отката
+                // Например, замедление движения на время действия отката
                 
-                // Пример: временное снижение скорости при активном откате
                 // float rollbackProgress = (float)((PhotonNetwork.Time - rollback.startTimestamp) / rollback.duration);
                 // Применение эффекта отката...
             }
@@ -169,7 +157,6 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         {
             position = obj[0].transform.position,
             rotation = obj[0].transform.rotation,
-            weaponRotation = obj[1].transform.rotation,
             timestamp = PhotonNetwork.Time
         });
     }
@@ -192,32 +179,18 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             obj[0].transform.position += movement;
     }
 
-    private void RotateWeapon()
-    {
-        Vector3 mousePosition = mainCam.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0f;
-
-        Vector3 directionToMouse = mousePosition - obj[2].transform.position;
-        float targetAngle = Mathf.Atan2(directionToMouse.y, directionToMouse.x) * Mathf.Rad2Deg - 90f;
-
-        obj[1].transform.rotation = Quaternion.Slerp(
-            obj[1].transform.rotation,
-            Quaternion.Euler(0f, 0f, targetAngle),
-            rotationSpeed2 * Time.deltaTime
-        );
-    }
 
     private void ApplyNetworkInterpolation()
     {
         // Получение времени с учетом задержки сети (пинга)
-        double interpolationTime = PhotonNetwork.Time - (PhotonNetwork.GetPing() * 0.001); // Преобразуем пинг из мс в секунды
+        double interpolationTime = PhotonNetwork.Time - (PhotonNetwork.GetPing() * 0.001);
         
-        // Поиск двух состояний для интерполяции
+        // Поиск состояний для интерполяции
         MovementState older = default;
         MovementState newer = default;
         bool foundStates = false;
         
-        // Поиск состояний для интерполяции на основе времени
+        // Поиск двух состояний для интерполяции на основе времени
         for (int i = 0; i < movementBuffer.Count - 1; i++)
         {
             if (movementBuffer[i].timestamp <= interpolationTime && 
@@ -233,19 +206,16 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         // Если не нашли подходящие состояния, используем последнее известное
         if (!foundStates && movementBuffer.Count > 0)
         {
-            // Телепорт, если объект слишком далеко (из-за лага)
+            // Телепорт при большой десинхронизации
             if (Vector3.Distance(obj[0].transform.position, correctPlayerPos) > teleportDistanceThreshold)
             {
-                obj[0].transform.position = correctPlayerPos;
-                obj[0].transform.rotation = correctPlayerRot;
-                obj[1].transform.rotation = correctWeaponRot;
+                obj[0].transform.SetPositionAndRotation(correctPlayerPos, correctPlayerRot);
                 return;
             }
             
             // Интерполяция к последнему известному состоянию
-            obj[0].transform.position = Vector3.Lerp(obj[0].transform.position, correctPlayerPos, Time.deltaTime * smoothing);
-            obj[0].transform.rotation = Quaternion.Slerp(obj[0].transform.rotation, correctPlayerRot, Time.deltaTime * smoothing);
-            obj[1].transform.rotation = Quaternion.Slerp(obj[1].transform.rotation, correctWeaponRot, Time.deltaTime * smoothing);
+            obj[0].transform.position = Vector3.Lerp(obj[0].transform.position, correctPlayerPos, Time.deltaTime * currentSmoothing);
+            obj[0].transform.rotation = Quaternion.Slerp(obj[0].transform.rotation, correctPlayerRot, Time.deltaTime * currentSmoothing);
             return;
         }
         
@@ -257,10 +227,9 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             // Применение интерполяции
             obj[0].transform.position = Vector3.Lerp(older.position, newer.position, t);
             obj[0].transform.rotation = Quaternion.Slerp(older.rotation, newer.rotation, t);
-            obj[1].transform.rotation = Quaternion.Slerp(older.weaponRotation, newer.weaponRotation, t);
         }
     }
-
+    
     // Метод для применения отката движения по запросу от сервера
     public void ApplyMovementRollback(int sequenceNumber, float duration)
     {
@@ -276,7 +245,7 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         
         activeRollbacks.Add(rollback);
         
-        // Также можно отправить RPC для визуализации эффекта отката другим игрокам
+        // Отправка RPC для визуализации эффекта другим игрокам
         photonView.RPC("ShowRollbackEffect", RpcTarget.Others, PhotonNetwork.Time, duration);
     }
     
@@ -289,25 +258,23 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting && photonView.IsMine)
+        if (stream.IsWriting)
         {
             // Отправка позиции, вращения и последовательного номера
             stream.SendNext(obj[0].transform.position);
             stream.SendNext(obj[0].transform.rotation);
-            stream.SendNext(obj[1].transform.rotation);
             stream.SendNext(currentSequenceNumber);
-            stream.SendNext(PhotonNetwork.Time); // Отправляем текущее серверное время
+            stream.SendNext(PhotonNetwork.Time); // Отправка текущего серверного времени
         }
         else
         {
             // Получение данных
             correctPlayerPos = (Vector3)stream.ReceiveNext();
             correctPlayerRot = (Quaternion)stream.ReceiveNext();
-            correctWeaponRot = (Quaternion)stream.ReceiveNext();
             int receivedSequence = (int)stream.ReceiveNext();
             double timestamp = (double)stream.ReceiveNext();
             
-            // Добавление полученного состояния в буфер для интерполяции
+            // Добавление полученного состояния в буфер
             if (movementBuffer.Count >= bufferSize)
             {
                 movementBuffer.RemoveAt(0);
@@ -317,13 +284,12 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             {
                 position = correctPlayerPos,
                 rotation = correctPlayerRot,
-                weaponRotation = correctWeaponRot,
                 timestamp = timestamp
             });
 
-            // Рассчитываем сглаживание на основе задержки
+            // Динамический расчет smoothing на основе пинга
             float lag = Mathf.Abs((float)(PhotonNetwork.Time - info.SentServerTime));
-            smoothing = Mathf.Clamp(10f / (1f + lag), 5f, 20f);
+            currentSmoothing = Mathf.Clamp(baseSmoothing / (1f + lag), minSmoothing, maxSmoothing);
         }
     }
 }

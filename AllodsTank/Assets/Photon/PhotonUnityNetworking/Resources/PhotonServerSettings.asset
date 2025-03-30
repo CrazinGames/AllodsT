@@ -19,7 +19,7 @@ MonoBehaviour:
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: eu
     Server: 
     Port: 0
     ProxyServer: 
@@ -45,6 +45,10 @@ MonoBehaviour:
   - SyncHealth
   - SyncPositionOnCollision
   - DelayedDeactivate
+  - ShowRollbackEffect
+  - TryFire
+  - RPC_EndAttack
+  - RPC_StartAttack
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

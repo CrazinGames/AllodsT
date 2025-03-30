@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Egida
   - Egida2
+  - PlayerUI
   layers:
   - Default
   - TransparentFX
