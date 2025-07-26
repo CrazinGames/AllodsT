@@ -15,7 +15,8 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
     [Header("Network")]
     [SerializeField] private float teleportDistanceThreshold = 5f; // Порог для телепорта при десинхронизации
     [SerializeField] private int bufferSize = 20; // Размер буфера для хранения истории движений
-    [SerializeField] private float maxPredictionTime = 1.0f; // Максимальное время предсказания в секундах
+    [SerializeField] private float maxPredictionTime = 1.0f;
+    [SerializeField] private PhotonView view;// Максимальное время предсказания в секундах
 
     private OneUpdate oneUpdate;
     private CameraMove cam;
@@ -26,7 +27,10 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
     private Vector3 correctPlayerPos;
     private Quaternion correctPlayerRot;
     private Quaternion correctWeaponRot;
-    
+
+    [SerializeField] private Animator _animator;
+    [SerializeField] private Collider2D _collision;
+
     // Структура для хранения состояния движения
     private struct MovementState
     {
@@ -74,9 +78,13 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         }
     }
 
+
+
     private void Start()
     {
+
         if (!photonView.IsMine) return;
+        view = GetComponentInParent<PhotonView>();
 
         mainCam = Camera.main;
         if (mainCam == null)
@@ -100,6 +108,43 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
         if (!isInitialized) Debug.LogError("Not all objects initialized!");
     }
 
+
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (!view.IsMine) return; // Только хозяин объекта может атаковать
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            if (collision.gameObject.TryGetComponent<PhotonView>(out var targetView))
+            {
+                if (!targetView.IsMine) // Чтобы не атаковать себя
+                {
+                    Debug.Log($"Атакуем {collision.gameObject.name}");
+                    targetView.RPC("TakeDamage", RpcTarget.All, stat._damage);
+                }
+            }
+        }
+    }
+
+
+    internal void Move()
+    {
+        Vector3 movement = Vector3.zero;
+
+        if (Input.GetKey(KeyCode.W))
+            movement = stat._speed * Time.deltaTime * obj[0].transform.up;
+        else if (Input.GetKey(KeyCode.S))
+            movement = stat._speed * Time.deltaTime * -obj[0].transform.up;
+
+        if (Input.GetKey(KeyCode.A))
+            obj[0].transform.Rotate(Vector3.forward, stat._speedRot * Time.deltaTime);
+        else if (Input.GetKey(KeyCode.D))
+            obj[0].transform.Rotate(Vector3.forward, -stat._speedRot * Time.deltaTime);
+
+        if (movement != Vector3.zero)
+            obj[0].transform.position += movement;
+    }
     private void OnDestroy()
     {
         if (photonView.IsMine && oneUpdate != null)
@@ -118,9 +163,9 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             // Регистрация нового состояния
             currentSequenceNumber++;
             lastInputTime = PhotonNetwork.Time;
-            
+
             // Выполнение движения
-            MainObj();
+            Move();
             RotateWeapon();
             fire.Fire();
             //stat.HP(obj[0]);
@@ -172,24 +217,6 @@ public class EgidaMain : MonoBehaviourPunCallbacks, IPunObservable, IUpdatable
             weaponRotation = obj[1].transform.rotation,
             timestamp = PhotonNetwork.Time
         });
-    }
-
-    private void MainObj()
-    {
-        Vector3 movement = Vector3.zero;
-
-        if (Input.GetKey(KeyCode.W))
-            movement = stat._speed * Time.deltaTime * obj[0].transform.up;
-        else if (Input.GetKey(KeyCode.S))
-            movement = stat._speed * Time.deltaTime * -obj[0].transform.up;
-
-        if (Input.GetKey(KeyCode.A))
-            obj[0].transform.Rotate(Vector3.forward, stat._speedRot * Time.deltaTime);
-        else if (Input.GetKey(KeyCode.D))
-            obj[0].transform.Rotate(Vector3.forward, -stat._speedRot * Time.deltaTime);
-
-        if (movement != Vector3.zero)
-            obj[0].transform.position += movement;
     }
 
     private void RotateWeapon()

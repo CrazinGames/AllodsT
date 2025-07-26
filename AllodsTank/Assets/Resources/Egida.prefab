@@ -55,6 +55,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -76,6 +78,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
@@ -148,8 +151,8 @@ GameObject:
   - component: {fileID: 3443100158736516756}
   - component: {fileID: 4820462352766128285}
   - component: {fileID: 3909179397446623204}
-  - component: {fileID: 4409849644366213069}
   - component: {fileID: 4343626423957951622}
+  - component: {fileID: 1462444689700939199}
   - component: {fileID: 3020246685149633687}
   m_Layer: 0
   m_Name: Fire
@@ -215,6 +218,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -236,6 +241,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
@@ -250,22 +256,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4409849644366213069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3760487910359131746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95453366a524e4f47b8d5a826a47937b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animator: {fileID: 4820462352766128285}
-  _collision: {fileID: 4343626423957951622}
-  _stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  view: {fileID: 7462161805334485929}
 --- !u!61 &4343626423957951622
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -312,6 +302,22 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.10341199, y: 2.7995372}
   m_EdgeRadius: 0
+--- !u!114 &1462444689700939199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3760487910359131746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95453366a524e4f47b8d5a826a47937b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EgidaFire
+  _animator: {fileID: 4820462352766128285}
+  _collision: {fileID: 4343626423957951622}
+  _stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
+  view: {fileID: 7462161805334485929}
 --- !u!114 &3020246685149633687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,6 +400,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -415,6 +423,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -460,12 +469,15 @@ MonoBehaviour:
   - {fileID: 1231608282483088079}
   - {fileID: 2992437676668911649}
   stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  fire: {fileID: 4409849644366213069}
+  fire: {fileID: 1462444689700939199}
   rotationSpeed2: 10
   smoothing: 10
   teleportDistanceThreshold: 5
   bufferSize: 20
   maxPredictionTime: 1
+  view: {fileID: 7462161805334485929}
+  _animator: {fileID: 4820462352766128285}
+  _collision: {fileID: 4343626423957951622}
 --- !u!114 &7080904412144436721
 MonoBehaviour:
   m_ObjectHideFlags: 0

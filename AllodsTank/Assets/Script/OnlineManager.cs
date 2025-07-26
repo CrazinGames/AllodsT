@@ -17,12 +17,9 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
     [SerializeField] internal MountName _name;
     
     [Header("Team Selection")]
-    [SerializeField] private Button teamAButton; // Кнопка выбора команды A
-    [SerializeField] private Button teamBButton; // Кнопка выбора команды B
-    [SerializeField] private Color teamAColor = Color.blue; // Цвет команды A
-    [SerializeField] private Color teamBColor = Color.red; // Цвет команды B
-    [SerializeField] private GameObject teamSelectionPanel; // Панель выбора команды
-    
+    [SerializeField] private Button[] _buttonTeam;
+    [SerializeField] internal teamSelect team;
+
     [Header("Network Settings")]
     [SerializeField] private float timeResyncInterval = 30f; // Интервал ресинхронизации времени
     [SerializeField] private int historyBufferSize = 100; // Размер буфера для истории действий
@@ -32,9 +29,6 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
     private const byte EVENT_ROLLBACK = 1;
     private const byte EVENT_TIME_SYNC = 2;
     private const byte EVENT_TEAM_SELECTION = 3;
-    
-    // Информация о выбранной команде
-    private string selectedTeam = "";
     
     // Информация о пинге и синхронизации времени
     private float localTimeOffset = 0f; // Разница между локальным и серверным временем
@@ -67,36 +61,12 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
             btn.onClick.AddListener(() => GetMount(tag)); // Передаем сохраненное значение
         }
 
-        // Инициализация кнопок выбора команды
-        if (teamAButton != null)
+        foreach (Button btn in _buttonTeam)
         {
-            teamAButton.onClick.AddListener(() => SelectTeam("A"));
-            
-            // Установка цвета кнопки команды A
-            ColorBlock cbA = teamAButton.colors;
-            cbA.normalColor = teamAColor;
-            cbA.selectedColor = teamAColor;
-            cbA.highlightedColor = new Color(teamAColor.r * 0.8f, teamAColor.g * 0.8f, teamAColor.b * 0.8f);
-            teamAButton.colors = cbA;
+            string tag = btn.gameObject.tag; // Сохраняем значение
+            btn.onClick.AddListener(() => SelectTeam(tag)); // Передаем сохраненное значение
         }
-        
-        if (teamBButton != null)
-        {
-            teamBButton.onClick.AddListener(() => SelectTeam("B"));
-            
-            // Установка цвета кнопки команды B
-            ColorBlock cbB = teamBButton.colors;
-            cbB.normalColor = teamBColor;
-            cbB.selectedColor = teamBColor;
-            cbB.highlightedColor = new Color(teamBColor.r * 0.8f, teamBColor.g * 0.8f, teamBColor.b * 0.8f);
-            teamBButton.colors = cbB;
-        }
-        
-        // По умолчанию панель выбора команды скрыта
-        if (teamSelectionPanel != null)
-        {
-            teamSelectionPanel.SetActive(false);
-        }
+
 
         if (!PhotonNetwork.IsConnected)
         {
@@ -139,15 +109,16 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public void GetMount(string mountTag)
     {
-        if (_name == null)
-        {
-            Debug.LogError("MountName не назначен! Невозможно сохранить mount name.");
-            return;
-        }
-
         _name._mountName = mountTag;
         Debug.Log($"Выбранный mount name: {_name._mountName}");
     }
+
+    // Выбор команды
+    public void SelectTeam(string teamTag)
+    {
+        team.selTeam = teamTag;
+    }
+
 
     public void CreateRoom()
     {
@@ -159,11 +130,6 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
             return;
         }
 
-        // Показываем панель выбора команды
-        if (teamSelectionPanel != null)
-        {
-            teamSelectionPanel.SetActive(true);
-        }
         
         // Создаем комнату для игры 5x5
         RoomOptions roomOptions = new RoomOptions 
@@ -188,39 +154,12 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
             return;
         }
 
-        // Показываем панель выбора команды
-        if (teamSelectionPanel != null)
-        {
-            teamSelectionPanel.SetActive(true);
-        }
 
         PhotonNetwork.JoinRoom(_join.text);
         Debug.Log("Запрос на вход в комнату отправлен.");
     }
     
-    // Выбор команды
-    public void SelectTeam(string team)
-    {
-        if (team != "A" && team != "B")
-        {
-            Debug.LogError("Неверное название команды! Должно быть 'A' или 'B'");
-            return;
-        }
-        
-        selectedTeam = team;
-        Debug.Log($"Выбрана команда: {team}");
-        
-        // Отправляем выбор команды всем игрокам через событие
-        object[] content = new object[] { PhotonNetwork.LocalPlayer.ActorNumber, team };
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-        PhotonNetwork.RaiseEvent(EVENT_TEAM_SELECTION, content, raiseEventOptions, SendOptions.SendReliable);
-        
-        // Скрываем панель выбора команды
-        if (teamSelectionPanel != null)
-        {
-            teamSelectionPanel.SetActive(false);
-        }
-    }
+    
 
     private bool CheckNetworkAndNickname()
     {
@@ -345,14 +284,6 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
         int playerActorNumber = (int)data[0];
         string team = (string)data[1];
         
-        // Находим объект игрока и применяем цвет команды
-        if (playerActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
-        {
-            selectedTeam = team;
-            
-            // Применяем цвет к объекту игрока после входа в комнату
-            StartCoroutine(ApplyTeamColorWhenReady(team));
-        }
     }
     
     private IEnumerator ApplyTeamColorWhenReady(string team)
@@ -363,23 +294,6 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
             yield return new WaitForSeconds(0.2f);
         }
         
-        // Применяем цвет команды
-        ApplyTeamColor(team);
-    }
-    
-    private void ApplyTeamColor(string team)
-    {
-        PhotonView playerView = GetLocalPlayerView();
-        if (playerView == null) return;
-        
-        // Находим все SpriteRenderer в объекте игрока
-        SpriteRenderer[] renderers = playerView.gameObject.GetComponentsInChildren<SpriteRenderer>();
-        Color teamColor = (team == "A") ? teamAColor : teamBColor;
-        
-        foreach (var renderer in renderers)
-        {
-            renderer.color = teamColor;
-        }
     }
     
     private PhotonView GetLocalPlayerView()
@@ -549,16 +463,7 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnJoinedRoom()
     {
         Debug.Log("Подключение к комнате успешно. Загружаем сцену Game...");
-        
-        // Инициализируем выбор команды, если еще не выбрана
-        if (string.IsNullOrEmpty(selectedTeam))
-        {
-            // Показываем панель выбора команды
-            if (teamSelectionPanel != null)
-            {
-                teamSelectionPanel.SetActive(true);
-            }
-        }
+       
         
         PhotonNetwork.LoadLevel("Game");
     }

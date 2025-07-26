@@ -9,6 +9,9 @@ TagManager:
   - Egida
   - Egida2
   - PlayerUI
+  - A
+  - B
+  - Molnia
   layers:
   - Default
   - TransparentFX
