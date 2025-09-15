@@ -18,3 +18,4 @@ MonoBehaviour:
   _damage: 10
   _speed: 10
   _speedRot: 150
+  _speedRot2: 10

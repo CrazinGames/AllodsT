@@ -14,6 +14,7 @@ public class StatsMount : ScriptableObject
     [SerializeField, Min(0)] internal float _damage = 10;
     [SerializeField, Min(0)] internal float _speed = 5;
     [SerializeField, Range(-360, 360)] internal float _speedRot = 90;
+    [SerializeField, Range(-360, 360)] internal float _speedRot2 = 10f;
 
 
     public class MountStatsInstance
@@ -24,6 +25,7 @@ public class StatsMount : ScriptableObject
         public float Damage { get; private set; }
         public float Speed { get; private set; }
         public float SpeedRot { get; private set; }
+        public float SpeedRot2 { get; private set; }
 
         public MountStatsInstance(StatsMount baseStats)
         {
@@ -33,6 +35,7 @@ public class StatsMount : ScriptableObject
             Damage = baseStats._damage;
             Speed = baseStats._speed;
             SpeedRot = baseStats._speedRot;
+            SpeedRot2 = baseStats._speedRot2;
         }
 
         public void TakeDamage(float damage, GameObject objToDisableIfDead = null)

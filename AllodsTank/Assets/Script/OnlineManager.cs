@@ -265,7 +265,6 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
         switch (eventCode)
         {
             case EVENT_ROLLBACK:
-                ProcessRollbackEvent(photonEvent);
                 break;
                 
             case EVENT_TIME_SYNC:
@@ -295,7 +294,7 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
         }
         
     }
-    
+
     private PhotonView GetLocalPlayerView()
     {
         PhotonView[] views = FindObjectsOfType<PhotonView>();
@@ -308,57 +307,7 @@ public class OnlineManager : MonoBehaviourPunCallbacks, IOnEventCallback
         }
         return null;
     }
-    
-    private void ProcessRollbackEvent(EventData photonEvent)
-    {
-        object[] data = (object[])photonEvent.CustomData;
-        
-        int targetPlayerId = (int)data[0];
-        int sequenceNumber = (int)data[1];
-        float duration = (float)data[2];
-        double timestamp = (double)data[3];
-        
-        // Если это откат для текущего игрока
-        if (targetPlayerId == PhotonNetwork.LocalPlayer.ActorNumber)
-        {
-            // Находим объект игрока и применяем откат
-            EgidaMain[] egidas = FindObjectsOfType<EgidaMain>();
-            foreach (var egida in egidas)
-            {
-                if (egida.photonView.IsMine)
-                {
-                    egida.ApplyMovementRollback(sequenceNumber, duration);
-                    break;
-                }
-            }
-            
-            MolniaMain[] molnias = FindObjectsOfType<MolniaMain>();
-            foreach (var molnia in molnias)
-            {
-                if (molnia.photonView.IsMine)
-                {
-                    // Если у MolniaMain нет метода ApplyMovementRollback, его нужно добавить
-                    molnia.ApplyMovementRollback(sequenceNumber, duration);
-                    break;
-                }
-            }
-        }
-        
-        // Сохраняем информацию об откате
-        RollbackInfo rollback = new RollbackInfo
-        {
-            playerId = targetPlayerId,
-            sequenceNumber = sequenceNumber,
-            duration = duration,
-            timestamp = timestamp
-        };
-        
-        activeRollbacks.Add(rollback);
-        
-        // Очищаем завершенные откаты (старше maxRollbackTime)
-        CleanupExpiredRollbacks();
-    }
-    
+
     private void ProcessTimeSyncEvent(EventData photonEvent)
     {
         object[] data = (object[])photonEvent.CustomData;

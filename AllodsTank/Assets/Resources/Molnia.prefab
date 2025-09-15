@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2565409889452250769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 703300392685179943}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &703300392685179943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2565409889452250769}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6312340305496678610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8147854822817029651
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,8 +41,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6312340305496678610}
   - component: {fileID: 4245628788460349766}
-  - component: {fileID: 4120767727421119185}
-  - component: {fileID: 3757566257117635868}
+  - component: {fileID: 4476901064231967427}
+  - component: {fileID: 8104975750370866704}
+  - component: {fileID: 1003412264450134065}
   - component: {fileID: 7029392950129675640}
   - component: {fileID: 4825110244255603636}
   - component: {fileID: -3244288204440583212}
@@ -35,7 +67,8 @@ Transform:
   m_LocalPosition: {x: 0.105, y: 0.204, z: -0.0024476047}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 703300392685179943}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4245628788460349766
@@ -58,6 +91,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -79,6 +114,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -93,7 +129,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4120767727421119185
+--- !u!114 &4476901064231967427
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,20 +138,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 8147854822817029651}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e31ea1165ae3ad43b38b3654b8a2141, type: 3}
+  m_Script: {fileID: 11500000, guid: 62e9827de162ed443b1851e1260ea7a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::MountHealth
+  _baseStats: {fileID: 11400000, guid: 456677336042a0449be997b6760a656d, type: 2}
+  _hpSlider: {fileID: 0}
+--- !u!114 &8104975750370866704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8147854822817029651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5453097aaea72c946ab5839c7206f060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMove
   obj:
   - {fileID: 8147854822817029651}
   stat: {fileID: 11400000, guid: 456677336042a0449be997b6760a656d, type: 2}
-  rotationSpeed2: 10
-  baseSmoothing: 15
-  teleportDistanceThreshold: 5
-  minSmoothing: 5
-  maxSmoothing: 20
-  bufferSize: 20
-  maxPredictionTime: 1
---- !u!114 &3757566257117635868
+  mainCam: {fileID: 0}
+--- !u!114 &1003412264450134065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,10 +168,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8147854822817029651}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04143e2b25e022e4fb7d4143b686ee9c, type: 3}
+  m_Script: {fileID: 11500000, guid: 9fe72ab6786013a408f3e056b4dc03f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  statMount: {fileID: 11400000, guid: 456677336042a0449be997b6760a656d, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::MountMain
+  stat: {fileID: 11400000, guid: 456677336042a0449be997b6760a656d, type: 2}
+  fire: {fileID: 0}
+  move: {fileID: 8104975750370866704}
+  view: {fileID: 4825110244255603636}
 --- !u!50 &7029392950129675640
 Rigidbody2D:
   serializedVersion: 5
@@ -172,9 +219,8 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 1
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
-  - {fileID: 4120767727421119185}
   - {fileID: -3244288204440583212}
   - {fileID: 9069175558555097577}
   sceneViewId: 0

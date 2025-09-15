@@ -1,10 +1,12 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static OneUpdate;
 
-public class UiEllements : MonoBehaviourPunCallbacks
+public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
 {
     [SerializeField] private GameObject _scrollView;
     [SerializeField] private GameObject _playerNamePrefabA;
@@ -13,35 +15,49 @@ public class UiEllements : MonoBehaviourPunCallbacks
     [SerializeField] private Transform _contentB;
     [SerializeField] private teamSelect team;
 
+    [SerializeField] private TMP_Text counting;
+    private void Start() => StartCoroutine(Countdown(10));
 
-
-    private void Update()
+    private IEnumerator Countdown(int score)
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        while (score > 0)
+        {
+            counting.text = score.ToString();
+            score--;
+            yield return new WaitForSeconds(1f);
+        }
+
+        counting.text = "НАЧИНАЕМ";
+        yield return new WaitForSeconds(1.5f);
+        HidePanel();
+    }
+
+    void HidePanel() => counting.transform.parent.gameObject.SetActive(false);
+
+
+    void IUpdatable.CustomFixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.Tab))
         {
             ShowPlayerList(true);
         }
-
-        if (Input.GetKeyUp(KeyCode.Tab))
+        else
         {
             ShowPlayerList(false);
         }
     }
 
+
     private void ShowPlayerList(bool show)
     {
         _scrollView.SetActive(show);
         UpdatePlayerList();
-        _scrollView.SetActive(show);
-        UpdatePlayerList();
-
     }
 
     private void UpdatePlayerList()
     {
         if (string.IsNullOrEmpty(team.selTeam))
         {
-            Debug.LogWarning("Команда не выбрана!");
             return;
         }
 

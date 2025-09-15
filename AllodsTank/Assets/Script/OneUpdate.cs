@@ -5,7 +5,7 @@ using UnityEngine;
 [DefaultExecutionOrder(-100)] // Запускаем раньше других скриптов
 public class OneUpdate : MonoBehaviour
 {
-    private readonly HashSet<IUpdatable> _updatableScripts = new HashSet<IUpdatable>();
+    private readonly HashSet<IUpdatable> _updatableScripts = new();
     private bool _isDirty; // Флаг необходимости обновления списка
 
     private void Awake()

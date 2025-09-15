@@ -4964,6 +4964,7 @@ MonoBehaviour:
   _nickName: {fileID: 1114610469}
   _button:
   - {fileID: 1480203229}
+  - {fileID: 654826610}
   _name: {fileID: 11400000, guid: ffd2ad030815ad54bb5dff540d2c9ac1, type: 2}
   _buttonTeam:
   - {fileID: 2096491799}

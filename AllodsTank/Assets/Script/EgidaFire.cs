@@ -35,8 +35,7 @@ public class EgidaFire : MonoBehaviour
         }
     }
 
-
-    internal void Fire()
+    public void Fire()
     {
         if (Input.GetMouseButton(0))
         {

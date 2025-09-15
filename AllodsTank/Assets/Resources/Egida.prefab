@@ -350,8 +350,8 @@ GameObject:
   - component: {fileID: 6312340305496678610}
   - component: {fileID: 4245628788460349766}
   - component: {fileID: 4227810952347502332}
+  - component: {fileID: 8661672094572824408}
   - component: {fileID: 482995838975834161}
-  - component: {fileID: 7080904412144436721}
   - component: {fileID: 7029392950129675640}
   - component: {fileID: 4943603429900971106}
   - component: {fileID: 7462161805334485929}
@@ -452,6 +452,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseStats: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   _hpSlider: {fileID: 0}
+--- !u!114 &8661672094572824408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8147854822817029651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5453097aaea72c946ab5839c7206f060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMove
+  obj:
+  - {fileID: 8147854822817029651}
+  - {fileID: 1231608282483088079}
+  - {fileID: 2992437676668911649}
+  stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
+  mainCam: {fileID: 0}
 --- !u!114 &482995838975834161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,33 +482,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fe72ab6786013a408f3e056b4dc03f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obj:
-  - {fileID: 8147854822817029651}
-  - {fileID: 1231608282483088079}
-  - {fileID: 2992437676668911649}
   stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  fire: {fileID: 1462444689700939199}
-  rotationSpeed2: 10
-  smoothing: 10
-  teleportDistanceThreshold: 5
-  bufferSize: 20
-  maxPredictionTime: 1
+  move: {fileID: 8661672094572824408}
   view: {fileID: 7462161805334485929}
-  _animator: {fileID: 4820462352766128285}
-  _collision: {fileID: 4343626423957951622}
---- !u!114 &7080904412144436721
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8147854822817029651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04143e2b25e022e4fb7d4143b686ee9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statMount: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
+  _attack: {fileID: 1462444689700939199}
+  nameMethod: Fire
 --- !u!50 &7029392950129675640
 Rigidbody2D:
   serializedVersion: 5
@@ -642,7 +638,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 482995838975834161}
   - {fileID: 782297596306460198}
   - {fileID: 3946011717927433844}
   - {fileID: 4238664105833322056}
