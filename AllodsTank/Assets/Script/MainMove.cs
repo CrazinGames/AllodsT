@@ -11,7 +11,7 @@ public class MainMove : MonoBehaviour
     private void Start()
     {
         // Автоматическая инициализация 
-        if (obj != null && obj.Length >= 3 && obj[0] != null && obj[1] != null && obj[2] != null && stat != null)
+        if (obj != null && obj[0] != null && stat != null)
         {
             mainCam = Camera.main;
             isInitialized = true;

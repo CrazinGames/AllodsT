@@ -485,8 +485,8 @@ MonoBehaviour:
   stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   move: {fileID: 8661672094572824408}
   view: {fileID: 7462161805334485929}
+  tower: 1
   _attack: {fileID: 1462444689700939199}
-  nameMethod: Fire
 --- !u!50 &7029392950129675640
 Rigidbody2D:
   serializedVersion: 5

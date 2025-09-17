@@ -140,7 +140,7 @@ namespace Photon.Pun
         ///
         /// Note that the Name Server may assign another cluster, if the requested one is not configured or available.
         /// </remarks>
-        public static string CurrentCluster { get { return (NetworkingClient != null ) ? NetworkingClient.CurrentCluster : null; } }
+        public static string CurrentCluster { get { return (NetworkingClient != null) ? NetworkingClient.CurrentCluster : null; } }
 
         /// <summary>Key to save the "Best Region Summary" in the Player Preferences.</summary>
         private const string PlayerPrefsKey = "PUNCloudBestRegion";

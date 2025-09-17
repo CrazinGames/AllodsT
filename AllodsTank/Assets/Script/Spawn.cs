@@ -7,7 +7,6 @@ public class Spawn : MonoBehaviourPunCallbacks
 
     [SerializeField] internal MountName _name;
 
-
     public void Awake() => SpawnPlayer();
 
     private void SpawnPlayer()

@@ -28,7 +28,6 @@ public class EgidaFire : MonoBehaviour
             {
                 if (!targetView.IsMine) // Чтобы не атаковать себя
                 {
-                    Debug.Log($"Атакуем {collision.gameObject.name}");
                     targetView.RPC("TakeDamage", RpcTarget.All, _stat._damage);
                 }
             }

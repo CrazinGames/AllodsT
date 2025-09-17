@@ -9,9 +9,9 @@ public class MountMain : MonoBehaviourPunCallbacks, IUpdatable
     [SerializeField] private MainMove move;
     [SerializeField] private PhotonView view;
 
-    //Универсальная херня для атаки
-    [SerializeField] private MonoBehaviour _attack; // Сюда пихаем любой скрипт 1
-    [SerializeField] private string nameMethod; // Тут указываем имя методе этого любого скрипта 2
+    [SerializeField] private bool tower;
+
+    [SerializeField] private MonoBehaviour _attack;
 
     private CameraMove cam;
     private bool isInitialized = false;
@@ -20,7 +20,6 @@ public class MountMain : MonoBehaviourPunCallbacks, IUpdatable
     {
         if (!photonView.IsMine) return;
 
-        // Ищем камеру и её скрипт CameraMove
         Camera mainCam = Camera.main;
         if (mainCam != null)
         {
@@ -65,19 +64,22 @@ public class MountMain : MonoBehaviourPunCallbacks, IUpdatable
         if (!isInitialized || !photonView.IsMine) return;
 
         move.Move();
-        move.RotateWeapon();
-        ExecuteTargetMethod(); // Вызов этого унив. метода 
+
+        if (tower == true)
+            move.RotateWeapon();
+
+        ExecuteTargetMethod("Fire"); // Вызов этого унив. метода 
 
         if (cam != null)
             cam.camMove(false);
     }
 
     // Универсальный метод для атаки
-    internal void ExecuteTargetMethod()
+    void ExecuteTargetMethod(string nameMethod)
     {
         if (_attack != null && !string.IsNullOrEmpty(nameMethod))
         {
-            _attack.gameObject.SendMessage(nameMethod,
+            _attack.SendMessage(nameMethod,
                 SendMessageOptions.DontRequireReceiver);
         }
     }

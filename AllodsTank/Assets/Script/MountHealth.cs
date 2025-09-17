@@ -31,8 +31,6 @@ public class MountHealth : MonoBehaviourPun
     {
         _instance.TakeDamage(damage, gameObject);
 
-        Debug.Log($"{photonView.Owner.NickName} получил урон: {damage}, осталось HP: {_instance.HP}");
-
         if (photonView.IsMine)
         {
             UpdateHealthUI();
