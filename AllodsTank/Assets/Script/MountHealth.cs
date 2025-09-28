@@ -6,34 +6,41 @@ public class MountHealth : MonoBehaviourPun
 {
     [SerializeField] private StatsMount _baseStats;
     [SerializeField] private Image _hpSlider;
-    private StatsMount.MountStatsInstance _instance;
+    [SerializeField] private Battleground kill;
+
+    private StatsMount.MountStatsInstance _stats;
 
     private void Start()
     {
-        _instance = new StatsMount.MountStatsInstance(_baseStats);
+        GameObject bgObject = GameObject.FindGameObjectWithTag("PlayerUI");
+        if (bgObject != null)
+        {
+            kill = bgObject.GetComponent<Battleground>();
+        }
 
-        // Если не установлен в инспекторе — найдём его по тегу
+        _stats = new StatsMount.MountStatsInstance(_baseStats);
+
         if (_hpSlider == null && photonView.IsMine)
         {
             GameObject hpObj = GameObject.FindWithTag("PlayerUI")?.transform.Find("HPSlider")?.gameObject;
-
             if (hpObj != null)
             {
                 _hpSlider = hpObj.GetComponent<Image>();
             }
         }
-
         UpdateHealthUI();
     }
 
     [PunRPC]
     public void TakeDamage(float damage)
     {
-        _instance.TakeDamage(damage, gameObject);
+        _stats.HP = Mathf.Max(0, _stats.HP - damage);
+        UpdateHealthUI();
 
-        if (photonView.IsMine)
+        if (_stats.HP <= 0)
         {
-            UpdateHealthUI();
+            kill.TotalKill(+1);
+            gameObject.SetActive(false);
         }
     }
 
@@ -41,7 +48,7 @@ public class MountHealth : MonoBehaviourPun
     {
         if (_hpSlider != null)
         {
-            _hpSlider.fillAmount = _instance.HP / _instance.MaxHP;
+            _hpSlider.fillAmount = _stats.HP / _stats.MaxHP;
         }
     }
 }

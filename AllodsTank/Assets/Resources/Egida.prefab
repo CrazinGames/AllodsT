@@ -316,8 +316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EgidaFire
   _animator: {fileID: 4820462352766128285}
   _collision: {fileID: 4343626423957951622}
-  _stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
-  view: {fileID: 7462161805334485929}
+  _baseStats: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
 --- !u!114 &3020246685149633687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseStats: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   _hpSlider: {fileID: 0}
+  kill: {fileID: 0}
 --- !u!114 &8661672094572824408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,7 +482,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fe72ab6786013a408f3e056b4dc03f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stat: {fileID: 11400000, guid: e8f3c5d2c0822d44c82086e3d0c5825f, type: 2}
   move: {fileID: 8661672094572824408}
   view: {fileID: 7462161805334485929}
   tower: 1

@@ -20,7 +20,7 @@ public class StatsMount : ScriptableObject
     public class MountStatsInstance
     {
         public string MountName { get; private set; }
-        public float HP { get; private set; }
+        public float HP { get; internal set; }
         public float MaxHP { get; private set; }
         public float Damage { get; private set; }
         public float Speed { get; private set; }
@@ -38,15 +38,6 @@ public class StatsMount : ScriptableObject
             SpeedRot2 = baseStats._speedRot2;
         }
 
-        public void TakeDamage(float damage, GameObject objToDisableIfDead = null)
-        {
-            HP = Mathf.Max(0, HP - damage);
-
-            if (HP <= 0 && objToDisableIfDead != null)
-            {
-                objToDisableIfDead.SetActive(false);
-            }
-        }
     }
 
 }

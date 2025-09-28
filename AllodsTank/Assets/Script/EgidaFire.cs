@@ -5,11 +5,14 @@ public class EgidaFire : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private Collider2D _collision;
-    [SerializeField] private StatsMount _stat;
-    [SerializeField] private PhotonView view; // Добавляем PhotonView
+    [SerializeField] private StatsMount _baseStats;
+
+    private StatsMount.MountStatsInstance _stats;
+    private PhotonView view;
 
     private void Start()
     {
+        _stats = new StatsMount.MountStatsInstance(_baseStats);
         view = GetComponentInParent<PhotonView>();
     }
 
@@ -20,16 +23,17 @@ public class EgidaFire : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (!view.IsMine) return; // Только хозяин объекта может атаковать
+        // Только хозяин объекта может инициировать атаку
+        if (!view.IsMine)
+            return;
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            if (collision.gameObject.TryGetComponent<PhotonView>(out var targetView))
+            PhotonView targetView = collision.gameObject.GetComponent<PhotonView>();
+            if (targetView != null && targetView.ViewID != view.ViewID) // Не атакуем себя
             {
-                if (!targetView.IsMine) // Чтобы не атаковать себя
-                {
-                    targetView.RPC("TakeDamage", RpcTarget.All, _stat._damage);
-                }
+                // Вызываем RPC на объекте противника
+                targetView.RPC("TakeDamage", RpcTarget.All, _stats.Damage);
             }
         }
     }

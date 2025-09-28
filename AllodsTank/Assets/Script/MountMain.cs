@@ -5,7 +5,6 @@ using static OneUpdate;
 public class MountMain : MonoBehaviourPunCallbacks, IUpdatable
 {
     [Header("References")]
-    [SerializeField] private StatsMount stat;
     [SerializeField] private MainMove move;
     [SerializeField] private PhotonView view;
 
@@ -33,7 +32,7 @@ public class MountMain : MonoBehaviourPunCallbacks, IUpdatable
         }
 
         // Проверяем инициализацию
-        isInitialized = (stat != null && move != null && view != null);
+        isInitialized = (move != null && view != null);
         if (!isInitialized)
         {
             Debug.LogError("Not all objects initialized in EgidaMain!");
