@@ -307,7 +307,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 8.099984, y: 0.0000104904175}
+  m_AnchoredPosition: {x: 8.100517, y: 0.0000104904175}
   m_SizeDelta: {x: -719.4, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &170177220
@@ -907,7 +907,6 @@ MonoBehaviour:
   _contentA: {fileID: 1072919531}
   _contentB: {fileID: 170177219}
   team: {fileID: 11400000, guid: 01940bbd93a61c6489f74b3b18679107, type: 2}
-  counting: {fileID: 1194765063}
 --- !u!114 &255944050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -935,6 +934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battleground
   kill: {fileID: 956593337}
+  counting: {fileID: 1194765063}
 --- !u!1 &270289804
 GameObject:
   m_ObjectHideFlags: 0
@@ -2471,7 +2471,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 703.2, y: -0.000020980835}
+  m_AnchoredPosition: {x: 703.19904, y: -0.000020980835}
   m_SizeDelta: {x: -1423.4, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1072919532
@@ -4074,8 +4074,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 627669764}
   m_HandleRect: {fileID: 627669763}
   m_Direction: 0
-  m_Value: 0.0000037676136
-  m_Size: 0.9774773
+  m_Value: -0.000033908265
+  m_Size: 0.9772535
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4200,8 +4200,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 810583312}
   m_HandleRect: {fileID: 810583311}
   m_Direction: 0
-  m_Value: 0.9999964
-  m_Size: 0.9763874
+  m_Value: 1.0000539
+  m_Size: 0.9759406
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using TMPro;
-using Unity.VisualScripting;
 
 [CreateAssetMenu(fileName = "StatsMount", menuName = "Scriptable Objects/StatsMount")]
 public class StatsMount : ScriptableObject

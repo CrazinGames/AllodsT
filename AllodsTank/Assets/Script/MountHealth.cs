@@ -12,6 +12,7 @@ public class MountHealth : MonoBehaviourPun
 
     private void Start()
     {
+
         GameObject bgObject = GameObject.FindGameObjectWithTag("PlayerUI");
         if (bgObject != null)
         {
@@ -34,7 +35,11 @@ public class MountHealth : MonoBehaviourPun
     [PunRPC]
     public void TakeDamage(float damage)
     {
+
+
         _stats.HP = Mathf.Max(0, _stats.HP - damage);
+
+
         UpdateHealthUI();
 
         if (_stats.HP <= 0)

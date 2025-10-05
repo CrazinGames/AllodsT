@@ -1,6 +1,5 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,38 +14,16 @@ public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
     [SerializeField] private Transform _contentB;
     [SerializeField] private teamSelect team;
 
-    [SerializeField] private TMP_Text counting;
-    private void Start() => StartCoroutine(Countdown(10));
-
-    private IEnumerator Countdown(int score)
-    {
-        while (score > 0)
-        {
-            counting.text = score.ToString();
-            score--;
-            yield return new WaitForSeconds(1f);
-        }
-
-        counting.text = "НАЧИНАЕМ";
-        yield return new WaitForSeconds(1.5f);
-        HidePanel();
-    }
-
-    void HidePanel() => counting.transform.parent.gameObject.SetActive(false);
 
 
     void IUpdatable.CustomFixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Tab))
+        bool show = Input.GetKey(KeyCode.Tab);
+        if (_scrollView.activeSelf != show)
         {
-            ShowPlayerList(true);
-        }
-        else
-        {
-            ShowPlayerList(false);
+            ShowPlayerList(show);
         }
     }
-
 
     private void ShowPlayerList(bool show)
     {

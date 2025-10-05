@@ -64,7 +64,7 @@ namespace Photon.Pun
     public static partial class PhotonNetwork
     {
         /// <summary>Version number of PUN. Used in the AppVersion, which separates your playerbase in matchmaking.</summary>
-        public const string PunVersion = "2.49";
+        public const string PunVersion = "2.51";
 
         /// <summary>Version number of your game. Setting this updates the AppVersion, which separates your playerbase in matchmaking.</summary>
         /// <remarks>
@@ -140,7 +140,7 @@ namespace Photon.Pun
         ///
         /// Note that the Name Server may assign another cluster, if the requested one is not configured or available.
         /// </remarks>
-        public static string CurrentCluster { get { return (NetworkingClient != null) ? NetworkingClient.CurrentCluster : null; } }
+        public static string CurrentCluster { get { return (NetworkingClient != null ) ? NetworkingClient.CurrentCluster : null; } }
 
         /// <summary>Key to save the "Best Region Summary" in the Player Preferences.</summary>
         private const string PlayerPrefsKey = "PUNCloudBestRegion";
