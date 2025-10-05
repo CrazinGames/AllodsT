@@ -36,9 +36,7 @@ public class MountHealth : MonoBehaviourPun
     public void TakeDamage(float damage)
     {
 
-
         _stats.HP = Mathf.Max(0, _stats.HP - damage);
-
 
         UpdateHealthUI();
 

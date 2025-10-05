@@ -4,4 +4,12 @@ using UnityEngine;
 public class teamSelect : ScriptableObject
 {
     [SerializeField] internal string selTeam = null;
+
+    private void OnEnable()
+    {
+        if (string.IsNullOrEmpty(selTeam))
+        {
+            selTeam = Random.value < 0.5f ? "A" : "B";
+        }
+    }
 }

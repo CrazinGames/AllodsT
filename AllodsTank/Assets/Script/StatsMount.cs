@@ -7,14 +7,13 @@ public class StatsMount : ScriptableObject
 {
     
     [Header("Базовые статы")]
-    [SerializeField] internal string _mountName;
-    [SerializeField, Min(0)] internal float _hp = 100;
-    [SerializeField, Min(0)] internal float _maxHp = 100;
-    [SerializeField, Min(0)] internal float _damage = 10;
+    [SerializeField] private string _mountName;
+    [SerializeField, Min(0)] private float _hp = 100;
+    [SerializeField, Min(0)] private float _maxHp = 100;
+    [SerializeField, Min(0)] private float _damage = 10;
     [SerializeField, Min(0)] internal float _speed = 5;
     [SerializeField, Range(-360, 360)] internal float _speedRot = 90;
     [SerializeField, Range(-360, 360)] internal float _speedRot2 = 10f;
-
 
     public class MountStatsInstance
     {

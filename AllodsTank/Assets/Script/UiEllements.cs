@@ -14,10 +14,10 @@ public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
     [SerializeField] private Transform _contentB;
     [SerializeField] private teamSelect team;
 
-
-
     void IUpdatable.CustomFixedUpdate()
     {
+        if (!photonView.IsMine) return;
+
         bool show = Input.GetKey(KeyCode.Tab);
         if (_scrollView.activeSelf != show)
         {
@@ -27,12 +27,16 @@ public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
 
     private void ShowPlayerList(bool show)
     {
+        if (!photonView.IsMine) return;
+
         _scrollView.SetActive(show);
         UpdatePlayerList();
     }
 
     private void UpdatePlayerList()
     {
+        if (!photonView.IsMine) return;
+
         if (string.IsNullOrEmpty(team.selTeam))
         {
             return;
@@ -65,6 +69,7 @@ public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        if (!photonView.IsMine) return;
 
         if (_scrollView.activeSelf)
         {
@@ -74,6 +79,8 @@ public class UiEllements : MonoBehaviourPunCallbacks, IUpdatable
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        if (!photonView.IsMine) return;
+
         if (_scrollView.activeSelf)
         {
             UpdatePlayerList();
